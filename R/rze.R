@@ -26,13 +26,17 @@ rze <- function(tree, calibration = NULL, rho = 1, epsilon = 0.2,
     stop("tree must be ultrametric (a time-calibrated tree of extant taxa)")
   }
 
-  if (is.null(calibration)) {
-    if (verbose) message("No calibration supplied, calibrating on the fly (this is slower)...")
-    calibration <- calibrate_rze(
-      n_grid = length(tree$tip.label),
-      rho_grid = rho, epsilon_grid = epsilon,
-      n_replicates = 50, min_clade_size = min_clade_size, verbose = FALSE
-    )
+  if (is.null(calibration) || is.character(calibration) || is.data.frame(calibration)) {
+    resolved <- resolve_calibration(calibration, verbose = verbose)
+    if (is.null(resolved)) {
+      if (verbose) message("No calibration supplied or shipped, calibrating on the fly (this is slower)...")
+      resolved <- calibrate_rze(
+        n_grid = length(tree$tip.label),
+        rho_grid = rho, epsilon_grid = epsilon,
+        n_replicates = 50, min_clade_size = min_clade_size, verbose = FALSE
+      )
+    }
+    calibration <- resolved
   }
 
   detection <- detect_clade_shifts(

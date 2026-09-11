@@ -2,16 +2,14 @@ Package: rze
 Title: Calibrated Detection of Clade-Localized Diversification Shifts
 Version: 0.1.0
 Authors@R:
-    person("First", "Last", email = "you@example.com", role = c("aut", "cre"))
+    person("Cristian", "Roman", email = "cromanpa@arizona.edu", role = c("aut", "cre"))
 Description: Detects clade-localized shifts in net diversification on
     time-calibrated phylogenies of extant taxa, using a stepwise
     model-selection search over candidate clades with an AIC threshold
     calibrated against simulated constant-rate trees. Reports net
     diversification per detected regime, handles incomplete sampling
     through a sampling fraction, and provides bold, poster-ready base R
-    visualizations of the result. The calibration step addresses a known
-    weakness of uncalibrated stepwise methods, whose default AIC
-    thresholds do not control the false-positive rate.
+    visualizations of the result.
 Depends: R (>= 4.0)
 Imports:
     ape,
@@ -22,11 +20,12 @@ Imports:
     grDevices,
     graphics,
     stats,
-    utils
+    utils,
+    tools
 Suggests:
     testthat (>= 3.0.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Config/testthat/edition: 3

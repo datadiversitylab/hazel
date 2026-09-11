@@ -12,6 +12,15 @@ For an extant-only tree, speciation and extinction are not separately identifiab
 
 ## Quick start
 
+Install rze from GitHub
+
+```
+library(devtools)
+install_github("datadiversitylab/rze")
+```
+
+Below is a brief and quick guide to rze.
+
 ```r
 library(rze)
 
@@ -30,6 +39,27 @@ calib <- calibrate_rze(n_grid = length(tree$tip.label),
                        rho_grid = 0.8, epsilon_grid = 0.2,
                        n_replicates = 100)
 result <- rze(tree, calibration = calib, rho = 0.8)
+```
+
+## Calibration tables
+
+rze needs an AIC-threshold calibration table. It resolves one in this order:
+
+1. **A table you pass in** — either a data frame from `calibrate_rze()`, or a path to a saved `.rds`/`.rda` file. Always wins.
+2. **The table shipped with the package**, loaded automatically if present. Generate it once with `scripts/generate_shipped_calibration.R` in the `rze-benchmarks` repository, which runs a full-grid, high-replicate calibration and saves it into the package via `save_as_default_calibration()`.
+3. **On-the-fly calibration** for your specific tree — the slow fallback, used only when neither of the above is available.
+
+To use a pre-existing table you generated:
+
+```r
+result <- rze(tree, calibration = "my_calibration.rds", rho = 0.8)
+```
+
+To make a generated table the package's shipped default:
+
+```r
+save_as_default_calibration(my_table, package_root = "path/to/rze")
+# then rebuild/reinstall the package
 ```
 
 ## Visuals
