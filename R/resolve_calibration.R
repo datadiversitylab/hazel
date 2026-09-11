@@ -14,6 +14,17 @@
 # passed (which may be NULL, a data frame, or a file path), falling back
 # through the order above.
 
+#' Resolve which calibration table to use
+#'
+#' Returns a calibration table following a precedence order: a table you
+#' pass in (a data frame, or a path to a saved \code{.rds}/\code{.rda}
+#' file) always wins; otherwise the table shipped with the package is used;
+#' otherwise \code{NULL} is returned so the caller can calibrate on the fly.
+#'
+#' @param calibration A data frame, a file path, or \code{NULL}.
+#' @param verbose Whether to print which source was used.
+#' @return A calibration data frame, or \code{NULL} if none is available.
+#' @export
 resolve_calibration <- function(calibration = NULL, verbose = TRUE) {
 
   # Case 1a: user passed a data frame directly
@@ -33,12 +44,31 @@ resolve_calibration <- function(calibration = NULL, verbose = TRUE) {
     return(tab)
   }
 
-  # Case 2: shipped default, if the package bundles one
+  # Case 2: shipped default. utils::data() finds it once the package is
+  # installed, but not during devtools::load_all() on the raw source tree,
+  # where the .rda sits in data/ but isn't yet on the search path. Try the
+  # installed path first, then fall back to reading the file directly from
+  # the package's data/ directory so the default also works in development.
   default <- tryCatch({
     e <- new.env()
     utils::data("calibration_default", package = "rze", envir = e)
     get("calibration_default", envir = e)
   }, error = function(err) NULL, warning = function(w) NULL)
+
+  if (is.null(default)) {
+    default <- tryCatch({
+      data_path <- system.file("..", "data", "calibration_default.rda",
+                               package = "rze")
+      alt_path <- file.path("data", "calibration_default.rda")
+      use_path <- if (nzchar(data_path) && file.exists(data_path)) data_path
+                  else if (file.exists(alt_path)) alt_path else ""
+      if (nzchar(use_path)) {
+        e <- new.env()
+        load(use_path, envir = e)
+        get("calibration_default", envir = e)
+      } else NULL
+    }, error = function(err) NULL)
+  }
 
   if (!is.null(default)) {
     validate_calibration_table(default)
@@ -89,6 +119,17 @@ validate_calibration_table <- function(tab) {
 # Run this once, on real hardware, after generating a production-grade
 # table with calibrate_rze() across a full grid. Writes into the package
 # source tree's data/ directory so it ships on the next install/build.
+#' Save a calibration table as the package default
+#'
+#' Writes a generated calibration table into the package source tree's
+#' \code{data/} directory as \code{calibration_default.rda}, so it ships
+#' on the next build or install. Run once, on real hardware, after
+#' generating a production-grade table.
+#'
+#' @param calibration_table A valid calibration data frame.
+#' @param package_root Path to the package source root.
+#' @return The path written, invisibly.
+#' @export
 save_as_default_calibration <- function(calibration_table,
                                          package_root = ".") {
   validate_calibration_table(calibration_table)

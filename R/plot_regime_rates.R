@@ -4,6 +4,16 @@
 # background" is answerable at a glance. Points colored by the same rate
 # ramp as the tree plot, keeping the visual language consistent.
 
+#' Plot per-regime rates against background
+#'
+#' A horizontal lollipop chart of each detected regime's net diversification
+#' rate, with the background rate as a reference, colored by the rze rate
+#' palette.
+#'
+#' @param x An \code{rze_result} object.
+#' @param ... Unused.
+#' @return Called for its plot side effect.
+#' @export
 plot_regime_rates <- function(x, ...) {
 
   if (!inherits(x, "rze_result")) stop("x must be an rze_result")

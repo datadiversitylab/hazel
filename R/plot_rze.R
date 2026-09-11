@@ -9,6 +9,20 @@
 # node, and assign the smallest such clade; edges in no shift clade get
 # the background regime.
 
+#' Plot an rze result as a branch-colored tree
+#'
+#' The main rze figure: a phylogeny with every branch colored by the net
+#' diversification rate of the regime it belongs to, detected shifts marked
+#' at their nodes, and a rate colorbar beneath. Built in base R.
+#'
+#' @param x An \code{rze_result} object.
+#' @param show_tip_labels Whether to draw tip labels.
+#' @param shift_cex Size of the shift markers.
+#' @param edge_width Branch line width.
+#' @param layout Whether to lay out the tree and colorbar together.
+#' @param ... Unused.
+#' @return Called for its plot side effect; returns \code{x} invisibly.
+#' @export
 plot.rze_result <- function(x, show_tip_labels = FALSE,
                             shift_cex = 2, edge_width = 3,
                             layout = TRUE, ...) {

@@ -2,6 +2,23 @@
 # real tree, using a calibration table produced by calibrate_medusa_null()
 # (or the shipped default, once one exists).
 
+#' Detect clade-localized diversification shifts
+#'
+#' The detection engine underlying \code{\link{rze}}: a stepwise
+#' model-selection search over candidate clades, accepting a shift when its
+#' AIC improvement clears the calibrated threshold for the tree's size,
+#' sampling fraction, and extinction fraction.
+#'
+#' @param tree An ultrametric \code{phylo} object.
+#' @param calibration_table A calibration table from
+#'   \code{\link{calibrate_rze}}.
+#' @param rho Sampling fraction.
+#' @param epsilon Assumed extinction fraction.
+#' @param min_clade_size Smallest clade the search may propose.
+#' @param verbose Whether to print progress.
+#' @return A list with detected split nodes, the final fit, and the search
+#'   history.
+#' @export
 detect_clade_shifts <- function(tree, calibration_table, rho = 1,
                                  epsilon = 0.2, min_clade_size = 5,
                                  verbose = TRUE) {

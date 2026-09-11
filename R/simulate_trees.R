@@ -2,6 +2,13 @@
 # calibration and validation. lambda fixed at 1, mu = epsilon * lambda,
 # so a single epsilon sets the whole regime.
 
+#' Simulate a constant-rate birth-death tree
+#'
+#' @param n Number of extant tips.
+#' @param rho Sampling fraction.
+#' @param epsilon Extinction fraction (mu = epsilon times lambda).
+#' @return An ultrametric \code{phylo} object.
+#' @export
 simulate_null_tree <- function(n, rho = 1, epsilon = 0) {
   
   if (n < 4) stop("n must be at least 4")
@@ -34,6 +41,16 @@ simulate_null_tree <- function(n, rho = 1, epsilon = 0) {
 # attachment tip labeled "NA", and the donor clade needs a root.edge
 # (even if zero length).
 
+#' Simulate a tree with one clade-localized rate shift
+#'
+#' @param n_background Background tree size.
+#' @param n_shifted Tips in the shifted clade.
+#' @param lambda_background Background speciation rate.
+#' @param lambda_ratio Shifted clade rate as a multiple of background.
+#' @param epsilon Extinction fraction.
+#' @param rho Sampling fraction.
+#' @return A list with the grafted tree and the true shifted-clade tips.
+#' @export
 simulate_clade_shift_tree <- function(n_background, n_shifted,
                                       lambda_background = 1,
                                       lambda_ratio = 3,

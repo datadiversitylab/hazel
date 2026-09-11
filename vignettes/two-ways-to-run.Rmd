@@ -1,0 +1,85 @@
+---
+title: "Two ways to run rze: shipped table or your own"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Two ways to run rze: shipped table or your own}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+There are two ways to run rze. One uses the calibration table that ships with the package, so you skip calibration and get a result immediately. The other calibrates for your specific tree first, which is slower but tuned to your exact settings. This vignette runs the same tree both ways so you can see what changes and what does not.
+
+## The fast way: use the shipped table
+
+You do nothing special. rze finds the shipped table and uses it.
+
+```{r}
+library(rze)
+
+set.seed(1)
+sim <- simulate_multi_shift_tree(
+  n_background = 150,
+  shifts = list(
+    list(n_shifted = 30, lambda_ratio = 8),
+    list(n_shifted = 20, lambda_ratio = 4)
+  ),
+  epsilon = 0.2, rho = 1
+)
+my_tree <- sim$tree
+
+result_shipped <- rze(my_tree, rho = 0.75)
+result_shipped
+```
+
+Behind the scenes, rze looked up the calibration cell closest to your tree's size, sampling fraction, and extinction assumption, and used that threshold. This is the right choice when your tree falls inside the shipped grid, which covers a wide range of tree sizes and sampling fractions.
+
+## The tuned way: calibrate first
+
+Here you build a calibration for your tree's exact settings, then pass it in.
+
+```{r}
+calib <- calibrate_rze(
+  n_grid = length(my_tree$tip.label),
+  rho_grid = 0.75,
+  epsilon_grid = 0.2,
+  n_replicates = 300
+)
+
+result_tuned <- rze(my_tree, calibration = calib, rho = 0.75)
+result_tuned
+```
+
+The result object is identical in structure. The only thing that can differ is which shifts clear the threshold, because the tuned threshold is built for your exact tree size rather than interpolated from nearby cells.
+
+## Comparing the two
+
+For a tree well inside the shipped grid, the two usually agree. The value of calibrating yourself shows up at the edges: a tree much larger than the shipped grid covers, or a sampling fraction the grid samples coarsely.
+
+```{r}
+identical(result_shipped$shifts, result_tuned$shifts)
+#> [1] TRUE   # often, for a well-covered tree
+
+# When they differ, look at which shifts appear in one but not the other
+setdiff(result_tuned$shifts, result_shipped$shifts)
+```
+
+If they disagree, the tuned result is the one to trust, since its threshold was built for your tree rather than borrowed from a neighbor.
+
+## A simple rule
+
+Use the shipped table for a first pass, always. It is fast and it is right for most trees. Calibrate yourself when your tree is unusually large, your sampling is unusual, or you are preparing a result for publication and want the threshold built for your exact case rather than interpolated. The two paths give you the same kind of answer, the difference is only in how the threshold was found.
+
+## Both paths, one figure
+
+Whichever way you run it, the plots are the same:
+
+```{r}
+plot(result_tuned)
+plot_regime_rates(result_tuned)
+```
+
+The branch-colored tree shows where the shifts are and how fast each part of the tree diversifies. The regime plot lines each detected clade up against the background rate. Neither depends on how you calibrated, only on what was detected.

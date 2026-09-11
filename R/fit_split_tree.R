@@ -13,6 +13,22 @@
 # wrong node indexing) is exactly the kind of thing that goes unnoticed
 # for hours otherwise.
 
+#' Fit a birth-death model with clade-specific regimes
+#'
+#' Fits one speciation and extinction pair per partition, splitting the tree
+#' at the given nodes. Includes a runtime check that equal-rate partitions
+#' reproduce the whole-tree likelihood.
+#'
+#' @param tree A \code{phylo} object.
+#' @param nodes Node indices where the tree is split.
+#' @param sampling.f Sampling fraction.
+#' @param x.init Starting values per partition.
+#' @param method Optimizer method.
+#' @param lower,upper Parameter bounds.
+#' @param skip_reduction_check Skip the equal-rate reduction check.
+#' @return A list with per-partition rates, log-likelihood, AIC, and a
+#'   boundary flag.
+#' @export
 fit_split_tree <- function(tree, nodes, sampling.f = 1,
                             x.init = c(0.1, 0.03), method = "subplex",
                             lower = 0, upper = 10,

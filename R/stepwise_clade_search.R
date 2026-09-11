@@ -13,6 +13,23 @@
 # accepting it. This is what calibrate_medusa_null() calls repeatedly to
 # build the null distribution the threshold is calibrated against.
 
+#' Stepwise forward-backward clade search
+#'
+#' Adds shift regimes one at a time while AIC improves past the threshold,
+#' then prunes. With \code{aic_threshold = NULL} it runs a single
+#' calibration step instead, used by \code{\link{calibrate_rze}}.
+#'
+#' @param tree A \code{phylo} object.
+#' @param candidates Candidate node indices.
+#' @param aic_threshold Acceptance threshold, or \code{NULL} for
+#'   calibration mode.
+#' @param max_splits Cap on accepted shifts.
+#' @param sampling.f Sampling fraction.
+#' @param verbose Whether to print progress.
+#' @param ... Passed to the underlying fit.
+#' @return In normal mode, a list with accepted splits, the fit, and
+#'   history; in calibration mode, the best candidate and its improvement.
+#' @export
 stepwise_clade_search <- function(tree, candidates, aic_threshold = NULL,
                                    max_splits = NULL, sampling.f = 1,
                                    verbose = TRUE) {

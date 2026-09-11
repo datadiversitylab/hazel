@@ -17,6 +17,18 @@
 #   "na"     report NA for that regime's rate, since the fit is unreliable
 #   "keep"   report the value with no special treatment
 
+#' Per-regime net diversification rates
+#'
+#' Extracts net diversification (speciation minus extinction) for each
+#' regime of a completed search, flagging regimes whose extinction estimate
+#' hit the boundary.
+#'
+#' @param result A detection result from \code{\link{detect_clade_shifts}}.
+#' @param tree The tree analysed.
+#' @param on_boundary How to report boundary-extinction regimes:
+#'   \code{"flag"}, \code{"na"}, or \code{"keep"}.
+#' @return A data frame, one row per regime.
+#' @export
 regime_rates <- function(result, tree, on_boundary = c("flag", "na", "keep")) {
 
   on_boundary <- match.arg(on_boundary)

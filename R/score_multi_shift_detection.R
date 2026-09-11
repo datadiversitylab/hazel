@@ -14,6 +14,18 @@
 # as a false positive otherwise. This mirrors sensitivity/precision
 # scoring generally, not something specific to this method.
 
+#' Score detection against known true shifts
+#'
+#' Per-shift accounting of how many true shifts were recovered and how many
+#' detections were spurious, for validation against simulated trees.
+#'
+#' @param result A detection result.
+#' @param tree The tree analysed.
+#' @param true_shifts The true shift records from a simulator.
+#' @param overlap_threshold Minimum tip-set overlap to count a shift as
+#'   recovered.
+#' @return A list of recovery and false-positive counts.
+#' @export
 score_multi_shift_detection <- function(result, tree, true_shifts,
                                          overlap_threshold = 0.7) {
 

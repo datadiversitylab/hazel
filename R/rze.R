@@ -1,18 +1,54 @@
-# Main user-facing entry point for rze.
-#
-# Runs the full pipeline on a tree: calibrated clade-shift detection, then
-# per-regime net diversification rate estimation. Returns a classed
-# rze_result object with print, summary, and plot methods.
-#
-# tree            an ultrametric phylo object of extant taxa
-# calibration     a calibration table from calibrate_rze() (or the shipped
-#                 default); if NULL, calibration is run on the fly (slower)
-# rho             sampling fraction, a single value (global) for now
-# epsilon         assumed extinction fraction for calibration cell lookup
-# min_clade_size  smallest clade the search may propose as its own regime
-# on_boundary     how to report a regime whose extinction estimate hit the
-#                 boundary, passed to regime_rates()
-
+#' Detect diversification rate shifts and estimate per-regime rates
+#'
+#' Runs the full rze pipeline on a tree: calibrated clade-shift detection,
+#' then per-regime net diversification rate estimation. Returns a classed
+#' \code{rze_result} object with print, summary, and plot methods.
+#'
+#' The calibration table is resolved through \code{\link{resolve_calibration}}:
+#' a table you pass in wins, otherwise the table shipped with the package is
+#' used, and only if neither is available does rze calibrate on the fly for
+#' your specific tree (which is slower).
+#'
+#' rze reports net diversification (speciation minus extinction) per regime.
+#' On an extant-only tree, speciation and extinction are not separately
+#' identifiable in general, so net diversification is the honest primary
+#' output. When a regime's extinction estimate hits its lower boundary, that
+#' regime is flagged, since the speciation/extinction split is not supported
+#' by the data there even though net diversification usually still is.
+#'
+#' @param tree An ultrametric \code{phylo} object of extant taxa.
+#' @param calibration A calibration table (a data frame from
+#'   \code{\link{calibrate_rze}}), a path to a saved \code{.rds}/\code{.rda}
+#'   file, or \code{NULL} to use the shipped default (or on-the-fly
+#'   calibration if no default is available).
+#' @param rho Sampling fraction, the proportion of species included in the
+#'   tree. A single global value.
+#' @param epsilon Assumed extinction fraction, used to pick the calibration
+#'   cell.
+#' @param min_clade_size Smallest clade the search may propose as its own
+#'   regime.
+#' @param on_boundary How to report a regime whose extinction estimate hit
+#'   the boundary: \code{"flag"} reports the value and marks it,
+#'   \code{"na"} returns \code{NA} for that regime, \code{"keep"} reports it
+#'   with no special treatment.
+#' @param verbose Whether to print progress messages.
+#'
+#' @return An \code{rze_result} object: a list with the tree, detected shift
+#'   nodes, a per-regime rate table, the search history, the calibration
+#'   used, the underlying fit, and the settings.
+#'
+#' @examples
+#' \dontrun{
+#' # With the shipped calibration table (no calibration step needed)
+#' result <- rze(tree, rho = 0.8)
+#' print(result)
+#' plot(result)
+#' plot_regime_rates(result)
+#' }
+#'
+#' @seealso \code{\link{calibrate_rze}}, \code{\link{resolve_calibration}},
+#'   \code{\link{plot_regime_rates}}
+#' @export
 rze <- function(tree, calibration = NULL, rho = 1, epsilon = 0.2,
                 min_clade_size = 5, on_boundary = c("flag", "na", "keep"),
                 verbose = TRUE) {
@@ -62,6 +98,10 @@ rze <- function(tree, calibration = NULL, rho = 1, epsilon = 0.2,
   )
 }
 
+#' @param x An \code{rze_result} object.
+#' @param ... Further arguments (unused).
+#' @rdname rze
+#' @export
 print.rze_result <- function(x, ...) {
   n_shifts <- length(x$shifts)
   cat("rze diversification shift analysis\n")
@@ -84,6 +124,9 @@ print.rze_result <- function(x, ...) {
   invisible(x)
 }
 
+#' @param object An \code{rze_result} object.
+#' @rdname rze
+#' @export
 summary.rze_result <- function(object, ...) {
   print(object, ...)
 }

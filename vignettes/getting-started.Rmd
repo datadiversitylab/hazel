@@ -1,0 +1,79 @@
+---
+title: "Getting started with rze"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with rze}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+rze finds where net diversification rate shifts on a phylogeny of extant taxa, and reports the rate for each part of the tree it identifies. This vignette covers the common case: you have a tree, you want the shifts and rates, and you want to use the calibration table that ships with the package so you can skip the calibration step entirely.
+
+## The one-line version
+
+```{r}
+library(rze)
+
+set.seed(1)
+sim <- simulate_multi_shift_tree(
+  n_background = 150,
+  shifts = list(
+    list(n_shifted = 30, lambda_ratio = 8),
+    list(n_shifted = 20, lambda_ratio = 4)
+  ),
+  epsilon = 0.2, rho = 1
+)
+my_tree <- sim$tree
+
+result <- rze(my_tree, rho = 0.8)
+result
+```
+
+`rho` is your sampling fraction, the proportion of the group's species that made it into the tree. If you sampled 80 of an estimated 100 species, `rho = 0.8`. Set it as accurately as you can, since detection depends on it.
+
+That single call runs the whole thing. It picks up the shipped calibration table automatically, searches the tree for clade-localized shifts, and estimates a net diversification rate for each regime. You do not run a calibration step, the table is already there.
+
+## What you get back
+
+Printing the result gives you the detected shifts and a rate for each regime:
+
+```{r}
+result
+#> rze diversification shift analysis
+#>   tree: 220 tips
+#>   sampling fraction (rho): 0.80
+#>   detected shifts: 2
+#>
+#>      regime node n_tips net_diversification boundary_mu
+#>  background   NA    170              0.0912       FALSE
+#>    shift_1  245     30              0.4821       FALSE
+#>    shift_2  268     20              0.2765       FALSE
+```
+
+The background row is the rest of the tree, the part with no shift. Each `shift_` row is a clade the search flagged as diversifying differently, with its own rate. `net_diversification` is speciation minus extinction, which is the rate you can actually trust from an extant-only tree. `boundary_mu` flags a regime whose extinction estimate ran to zero, when that happens the net rate is still fine but you should not read anything into the split between speciation and extinction there.
+
+## Seeing it
+
+The main plot colors every branch by its regime's rate, so the fast and slow parts of the tree are obvious at a glance, and marks each detected shift:
+
+```{r}
+plot(result)
+```
+
+The rate comparison plot lines up each detected clade against the background rate, which is usually the figure that answers the question you actually care about, which clades stand out:
+
+```{r}
+plot_regime_rates(result)
+```
+
+## A few things worth knowing
+
+Detection power depends on tree size. Small trees, roughly under 30 tips, have low power even when a shift is real and large. Recovery gets reliable as trees grow into the hundreds of tips. If rze finds nothing on a small tree, that is often a power limit, not evidence that no shift exists.
+
+rze reports net diversification, not speciation and extinction separately. That is deliberate. On a tree of living species you cannot cleanly separate the two, so reporting them as if you could would be dishonest. Net diversification is the quantity the data supports.
+
+The sampling fraction here is a single global value. If your sampling is very uneven across the tree, see the calibration vignette for how to handle that more carefully.

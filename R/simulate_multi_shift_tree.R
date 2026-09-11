@@ -9,6 +9,16 @@
 # shifts is a list of lists, each with n_shifted, lambda_ratio, and
 # optionally epsilon (defaults to the background epsilon if omitted).
 
+#' Simulate a tree with several clade-localized shifts
+#'
+#' @param n_background Background tree size.
+#' @param shifts A list of shift specifications, each a list with
+#'   \code{n_shifted} and \code{lambda_ratio}.
+#' @param lambda_background Background speciation rate.
+#' @param epsilon Extinction fraction.
+#' @param rho Sampling fraction.
+#' @return A list with the tree and a record of each true shift.
+#' @export
 simulate_multi_shift_tree <- function(n_background, shifts,
                                        lambda_background = 1,
                                        epsilon = 0.2, rho = 1) {

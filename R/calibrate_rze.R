@@ -79,4 +79,27 @@ get_calibrated_threshold <- function(calibration_table, n, rho, epsilon) {
 # Public-facing name for the calibration function. calibrate_medusa_null()
 # remains as the internal name the rest of the code and tests already use;
 # calibrate_rze() is the name users see and call.
+#' Calibrate the AIC threshold against simulated null trees
+#'
+#' Simulates constant-rate (no-shift) trees across a grid of tree size,
+#' sampling fraction, and extinction fraction, and records the AIC
+#' improvement a spurious shift achieves under the null. The chosen
+#' percentile of that null distribution becomes the acceptance threshold
+#' for each cell, so the false-positive rate is controlled rather than left
+#' to an uncalibrated default.
+#'
+#' @param n_grid Tree sizes (tip counts) to calibrate for.
+#' @param rho_grid Sampling fractions to calibrate for.
+#' @param epsilon_grid Extinction fractions to calibrate for.
+#' @param n_replicates Null trees simulated per cell. More is more reliable;
+#'   small counts give noisy thresholds.
+#' @param min_clade_size Smallest clade the search may propose.
+#' @param target_percentile Null percentile used as the threshold
+#'   (0.95 targets a 5 percent false-positive rate).
+#' @param verbose Whether to print progress.
+#'
+#' @return A data frame with one row per cell: \code{n}, \code{rho},
+#'   \code{epsilon}, the number of valid replicates, and
+#'   \code{aic_threshold}.
+#' @export
 calibrate_rze <- function(...) calibrate_medusa_null(...)

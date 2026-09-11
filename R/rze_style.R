@@ -8,6 +8,14 @@
 # low to bright high), avoiding the rainbow ramp that misleads the eye and
 # dates a figure.
 
+#' The rze color palette
+#'
+#' A bold, saturated sequential ramp used across all rze plots, from a deep
+#' low to a bright high.
+#'
+#' @param n Number of colors.
+#' @return A character vector of hex colors.
+#' @export
 rze_palette <- function(n = 256) {
   # Deep indigo -> violet -> magenta -> hot orange -> bright yellow, a
   # saturated sequential ramp with strong luminance ordering
