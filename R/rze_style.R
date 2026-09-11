@@ -62,10 +62,16 @@ rze_neutral <- function() "#333333"
 # can be placed in its own panel or beside a tree.
 rze_colorbar <- function(zlim, palette = rze_palette(256),
                          label = "net diversification",
-                         horiz = TRUE) {
+                         horiz = TRUE, manage_par = TRUE) {
 
-  old <- graphics::par(mar = c(3, 1, 2, 1))
-  on.exit(graphics::par(old))
+  # When called standalone, manage margins and restore them. When called
+  # from within an existing layout (e.g. plot.rze_result), the caller owns
+  # par and layout, so a nested par restore here would corrupt the state,
+  # skip it.
+  if (manage_par) {
+    old <- graphics::par(mar = c(3, 1, 2, 1))
+    on.exit(graphics::par(old))
+  }
 
   n <- length(palette)
   if (horiz) {

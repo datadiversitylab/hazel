@@ -9,7 +9,7 @@
   show_tip_labels = FALSE,
   shift_cex = 2,
   edge_width = 3,
-  layout = TRUE,
+  legend = TRUE,
   ...
 )
 }
@@ -22,7 +22,7 @@
 
 \item{edge_width}{Branch line width.}
 
-\item{layout}{Whether to lay out the tree and colorbar together.}
+\item{legend}{Whether to draw the inline rate legend.}
 
 \item{...}{Unused.}
 }
@@ -31,6 +31,7 @@ Called for its plot side effect; returns \code{x} invisibly.
 }
 \description{
 The main rze figure: a phylogeny with every branch colored by the net
-diversification rate of the regime it belongs to, detected shifts marked
-at their nodes, and a rate colorbar beneath. Built in base R.
+diversification rate of the regime it belongs to, and detected shifts
+marked at their nodes. A compact rate legend is drawn inside the plot.
+Built in base R, single panel, so it is robust across devices.
 }

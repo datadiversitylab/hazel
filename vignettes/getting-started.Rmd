@@ -70,6 +70,19 @@ The rate comparison plot lines up each detected clade against the background rat
 plot_regime_rates(result)
 ```
 
+
+## Whale dataset
+
+```{r eval=FALSE, include=TRUE}
+data(whales, events.whales)
+my_tree <- force.ultrametric(whales)
+result <- rze(my_tree, rho = 0.8)
+result
+plot(result)
+plot_regime_rates(result)
+```
+
+
 ## A few things worth knowing
 
 Detection power depends on tree size. Small trees, roughly under 30 tips, have low power even when a shift is real and large. Recovery gets reliable as trees grow into the hundreds of tips. If rze finds nothing on a small tree, that is often a power limit, not evidence that no shift exists.
