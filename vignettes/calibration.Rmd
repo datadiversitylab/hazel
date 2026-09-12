@@ -11,24 +11,24 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 ```
 
-Most stepwise shift-detection methods decide whether to accept a shift by asking if it improves the model's AIC. The problem is that adding parameters almost always improves raw fit, so "AIC got better" is a low bar that a constant-rate tree clears all the time by chance. That is where false positives come from. rze fixes this by calibrating the threshold: it works out how much AIC improvement a spurious shift actually produces on trees with no shifts, and only accepts real shifts that clear that bar.
+Most stepwise shift-detection methods decide whether to accept a shift by asking if it improves the model's AIC. The problem is that adding parameters almost always improves raw fit, so "AIC got better" is a low bar that a constant-rate tree clears all the time by chance. That is where false positives come from. hazel fixes this by calibrating the threshold: it works out how much AIC improvement a spurious shift actually produces on trees with no shifts, and only accepts real shifts that clear that bar.
 
 This vignette explains what calibration does and when you need to run it yourself. For most users the answer is that you do not, the package ships a table, but it helps to understand what that table is.
 
 ## What a calibration table is
 
-A calibration table is small. One row per combination of tree size, sampling fraction, and extinction fraction, with the AIC threshold rze should use for a tree matching that cell:
+A calibration table is small. One row per combination of tree size, sampling fraction, and extinction fraction, with the AIC threshold hazel should use for a tree matching that cell:
 
 ```{r}
-library(rze)
+library(hazel)
 head(resolve_calibration())
 ```
 
-When you run `rze()`, it looks up the cell closest to your tree and uses that threshold. The whole point is that the expensive work, simulating thousands of null trees to find those thresholds, is done once and reused.
+When you run `hazel()`, it looks up the cell closest to your tree and uses that threshold. The whole point is that the expensive work, simulating thousands of null trees to find those thresholds, is done once and reused.
 
 ## When you do not need to run it
 
-If your tree's size, sampling fraction, and extinction assumption fall inside the shipped table's grid, you never touch calibration. `rze(my_tree, rho = 0.8)` finds the right threshold on its own. This is the normal case.
+If your tree's size, sampling fraction, and extinction assumption fall inside the shipped table's grid, you never touch calibration. `hazel(my_tree, rho = 0.8)` finds the right threshold on its own. This is the normal case.
 
 ```{r}
 set.seed(1)
@@ -48,14 +48,14 @@ my_tree <- sim$tree
 Run your own calibration when your tree sits outside the shipped grid, or when you want a threshold tuned tightly to your exact settings rather than an interpolated one. The most common reason is a tree much larger than anything in the shipped table, or a sampling fraction the table does not cover well.
 
 ```{r}
-calib <- calibrate_rze(
+calib <- calibrate_hazel(
   n_grid = length(my_tree$tip.label),
   rho_grid = 0.8,
   epsilon_grid = 0.2,
   n_replicates = 300
 )
 
-result <- rze(my_tree, calibration = calib, rho = 0.8)
+result <- hazel(my_tree, calibration = calib, rho = 0.8)
 ```
 
 `n_replicates` is the number of null trees simulated per cell. This is the knob that matters most. Low counts give noisy thresholds, and a noisy threshold is worse than no calibration because it looks precise while being wrong. Use at least a few hundred replicates for anything you plan to trust. It is slow, but it is a run-once cost.
@@ -66,7 +66,7 @@ You supply `epsilon`, the extinction fraction, because you cannot estimate it re
 
 ```{r}
 for (eps in c(0, 0.25, 0.5, 0.75)) {
-  res <- rze(my_tree, rho = 0.8, epsilon = eps)
+  res <- hazel(my_tree, rho = 0.8, epsilon = eps)
   cat("epsilon", eps, "-> shifts at nodes:",
       paste(res$shifts, collapse = ", "), "\n")
 }
@@ -76,13 +76,13 @@ A shift that shows up regardless of what you assume about extinction is a much s
 
 ## Saving a calibration you generated
 
-If you built a calibration you want to reuse, save it and point rze at the file later:
+If you built a calibration you want to reuse, save it and point hazel at the file later:
 
 ```{r}
 saveRDS(calib, "my_calibration.rds")
 
 # in a later session
-result <- rze(my_tree, calibration = "my_calibration.rds", rho = 0.8)
+result <- hazel(my_tree, calibration = "my_calibration.rds", rho = 0.8)
 ```
 
-If you want a table to become the package's own default, so `rze()` uses it automatically, `save_as_default_calibration()` writes it into the package's data directory. That is mainly useful if you maintain your own build of rze for a group you work on often.
+If you want a table to become the package's own default, so `hazel()` uses it automatically, `save_as_default_calibration()` writes it into the package's data directory. That is mainly useful if you maintain your own build of hazel for a group you work on often.

@@ -1,4 +1,4 @@
-Package: rze
+Package: hazel
 Title: Calibrated Detection of Clade-Localized Diversification Shifts
 Version: 0.1.0
 Authors@R:
@@ -8,7 +8,7 @@ Description: Detects clade-localized shifts in net diversification on
     model-selection search over candidate clades with an AIC threshold
     calibrated against simulated constant-rate trees. Reports net
     diversification per detected regime, handles incomplete sampling
-    through a sampling fraction, and provides bold, poster-ready base R
+    through a sampling fraction, and draws clean, earthy base R
     visualizations of the result.
 Depends: R (>= 4.0)
 Imports:

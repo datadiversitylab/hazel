@@ -1,15 +1,15 @@
 #' Detect diversification rate shifts and estimate per-regime rates
 #'
-#' Runs the full rze pipeline on a tree: calibrated clade-shift detection,
+#' Runs the full hazel pipeline on a tree: calibrated clade-shift detection,
 #' then per-regime net diversification rate estimation. Returns a classed
-#' \code{rze_result} object with print, summary, and plot methods.
+#' \code{hazel_result} object with print, summary, and plot methods.
 #'
 #' The calibration table is resolved through \code{\link{resolve_calibration}}:
 #' a table you pass in wins, otherwise the table shipped with the package is
-#' used, and only if neither is available does rze calibrate on the fly for
+#' used, and only if neither is available does hazel calibrate on the fly for
 #' your specific tree (which is slower).
 #'
-#' rze reports net diversification (speciation minus extinction) per regime.
+#' hazel reports net diversification (speciation minus extinction) per regime.
 #' On an extant-only tree, speciation and extinction are not separately
 #' identifiable in general, so net diversification is the honest primary
 #' output. When a regime's extinction estimate hits its lower boundary, that
@@ -18,7 +18,7 @@
 #'
 #' @param tree An ultrametric \code{phylo} object of extant taxa.
 #' @param calibration A calibration table (a data frame from
-#'   \code{\link{calibrate_rze}}), a path to a saved \code{.rds}/\code{.rda}
+#'   \code{\link{calibrate_hazel}}), a path to a saved \code{.rds}/\code{.rda}
 #'   file, or \code{NULL} to use the shipped default (or on-the-fly
 #'   calibration if no default is available).
 #' @param rho Sampling fraction, the proportion of species included in the
@@ -33,23 +33,23 @@
 #'   with no special treatment.
 #' @param verbose Whether to print progress messages.
 #'
-#' @return An \code{rze_result} object: a list with the tree, detected shift
+#' @return An \code{hazel_result} object: a list with the tree, detected shift
 #'   nodes, a per-regime rate table, the search history, the calibration
 #'   used, the underlying fit, and the settings.
 #'
 #' @examples
 #' \dontrun{
 #' # With the shipped calibration table (no calibration step needed)
-#' result <- rze(tree, rho = 0.8)
+#' result <- hazel(tree, rho = 0.8)
 #' print(result)
 #' plot(result)
 #' plot_regime_rates(result)
 #' }
 #'
-#' @seealso \code{\link{calibrate_rze}}, \code{\link{resolve_calibration}},
+#' @seealso \code{\link{calibrate_hazel}}, \code{\link{resolve_calibration}},
 #'   \code{\link{plot_regime_rates}}
 #' @export
-rze <- function(tree, calibration = NULL, rho = 1, epsilon = 0.2,
+hazel <- function(tree, calibration = NULL, rho = 1, epsilon = 0.2,
                 min_clade_size = 5, on_boundary = c("flag", "na", "keep"),
                 verbose = TRUE) {
 
@@ -66,7 +66,7 @@ rze <- function(tree, calibration = NULL, rho = 1, epsilon = 0.2,
     resolved <- resolve_calibration(calibration, verbose = verbose)
     if (is.null(resolved)) {
       if (verbose) message("No calibration supplied or shipped, calibrating on the fly (this is slower)...")
-      resolved <- calibrate_rze(
+      resolved <- calibrate_hazel(
         n_grid = length(tree$tip.label),
         rho_grid = rho, epsilon_grid = epsilon,
         n_replicates = 50, min_clade_size = min_clade_size, verbose = FALSE
@@ -94,17 +94,17 @@ rze <- function(tree, calibration = NULL, rho = 1, epsilon = 0.2,
                        min_clade_size = min_clade_size,
                        on_boundary = on_boundary)
     ),
-    class = "rze_result"
+    class = "hazel_result"
   )
 }
 
-#' @param x An \code{rze_result} object.
+#' @param x An \code{hazel_result} object.
 #' @param ... Further arguments (unused).
-#' @rdname rze
+#' @rdname hazel
 #' @export
-print.rze_result <- function(x, ...) {
+print.hazel_result <- function(x, ...) {
   n_shifts <- length(x$shifts)
-  cat("rze diversification shift analysis\n")
+  cat("hazel diversification shift analysis\n")
   cat(sprintf("  tree: %d tips\n", length(x$tree$tip.label)))
   cat(sprintf("  sampling fraction (rho): %.2f\n", x$settings$rho))
   cat(sprintf("  detected shifts: %d\n", n_shifts))
@@ -124,9 +124,9 @@ print.rze_result <- function(x, ...) {
   invisible(x)
 }
 
-#' @param object An \code{rze_result} object.
-#' @rdname rze
+#' @param object An \code{hazel_result} object.
+#' @rdname hazel
 #' @export
-summary.rze_result <- function(object, ...) {
+summary.hazel_result <- function(object, ...) {
   print(object, ...)
 }

@@ -26,8 +26,6 @@ calibration mode.}
 \item{sampling.f}{Sampling fraction.}
 
 \item{verbose}{Whether to print progress.}
-
-\item{...}{Passed to the underlying fit.}
 }
 \value{
 In normal mode, a list with accepted splits, the fit, and
@@ -36,5 +34,5 @@ history; in calibration mode, the best candidate and its improvement.
 \description{
 Adds shift regimes one at a time while AIC improves past the threshold,
 then prunes. With \code{aic_threshold = NULL} it runs a single
-calibration step instead, used by \code{\link{calibrate_rze}}.
+calibration step instead, used by \code{\link{calibrate_hazel}}.
 }

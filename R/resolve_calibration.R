@@ -1,6 +1,6 @@
 # Resolving which calibration table to use.
 #
-# rze needs an AIC-threshold calibration table to run. There are three
+# hazel needs an AIC-threshold calibration table to run. There are three
 # ways one can be supplied, in precedence order:
 #
 #   1. An explicit table passed by the user (a data frame, or a path to a
@@ -51,14 +51,14 @@ resolve_calibration <- function(calibration = NULL, verbose = TRUE) {
   # the package's data/ directory so the default also works in development.
   default <- tryCatch({
     e <- new.env()
-    utils::data("calibration_default", package = "rze", envir = e)
+    utils::data("calibration_default", package = "hazel", envir = e)
     get("calibration_default", envir = e)
   }, error = function(err) NULL, warning = function(w) NULL)
 
   if (is.null(default)) {
     default <- tryCatch({
       data_path <- system.file("..", "data", "calibration_default.rda",
-                               package = "rze")
+                               package = "hazel")
       alt_path <- file.path("data", "calibration_default.rda")
       use_path <- if (nzchar(data_path) && file.exists(data_path)) data_path
                   else if (file.exists(alt_path)) alt_path else ""
@@ -72,7 +72,7 @@ resolve_calibration <- function(calibration = NULL, verbose = TRUE) {
 
   if (!is.null(default)) {
     validate_calibration_table(default)
-    if (verbose) message("Using the calibration table shipped with rze.")
+    if (verbose) message("Using the calibration table shipped with hazel.")
     return(default)
   }
 
@@ -117,7 +117,7 @@ validate_calibration_table <- function(tab) {
 
 # Save a generated calibration table as the package's shipped default.
 # Run this once, on real hardware, after generating a production-grade
-# table with calibrate_rze() across a full grid. Writes into the package
+# table with calibrate_hazel() across a full grid. Writes into the package
 # source tree's data/ directory so it ships on the next install/build.
 #' Save a calibration table as the package default
 #'

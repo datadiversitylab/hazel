@@ -7,7 +7,7 @@
 plot_regime_rates(x, ...)
 }
 \arguments{
-\item{x}{An \code{rze_result} object.}
+\item{x}{An \code{hazel_result} object.}
 
 \item{...}{Unused.}
 }
@@ -16,6 +16,6 @@ Called for its plot side effect.
 }
 \description{
 A horizontal lollipop chart of each detected regime's net diversification
-rate, with the background rate as a reference, colored by the rze rate
+rate, with the background rate as a reference, colored by the hazel rate
 palette.
 }

@@ -17,7 +17,7 @@
 #'
 #' Adds shift regimes one at a time while AIC improves past the threshold,
 #' then prunes. With \code{aic_threshold = NULL} it runs a single
-#' calibration step instead, used by \code{\link{calibrate_rze}}.
+#' calibration step instead, used by \code{\link{calibrate_hazel}}.
 #'
 #' @param tree A \code{phylo} object.
 #' @param candidates Candidate node indices.
@@ -26,7 +26,6 @@
 #' @param max_splits Cap on accepted shifts.
 #' @param sampling.f Sampling fraction.
 #' @param verbose Whether to print progress.
-#' @param ... Passed to the underlying fit.
 #' @return In normal mode, a list with accepted splits, the fit, and
 #'   history; in calibration mode, the best candidate and its improvement.
 #' @export

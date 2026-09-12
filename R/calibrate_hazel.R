@@ -61,18 +61,14 @@ calibrate_medusa_null <- function(n_grid, rho_grid, epsilon_grid,
   do.call(rbind, results)
 }
 
-# Interpolate a calibrated threshold for a tree's actual n, rho, epsilon
-# against a calibration table, nearest-neighbor for now, simplest thing
-# that works, refine to real interpolation once the shipped grid exists.
-
 #' Look up the calibrated AIC threshold for a tree
 #'
 #' Given a calibration table and a tree's size, sampling fraction, and
 #' extinction fraction, returns the AIC-improvement threshold for the
-#' nearest matching cell. Used internally by \code{\link{rze}}, and exported
+#' nearest matching cell. Used internally by \code{\link{hazel}}, and exported
 #' for custom calibration workflows.
 #'
-#' @param calibration_table A calibration table from \code{\link{calibrate_rze}}.
+#' @param calibration_table A calibration table from \code{\link{calibrate_hazel}}.
 #' @param n Tree size (tip count).
 #' @param rho Sampling fraction.
 #' @param epsilon Extinction fraction.
@@ -89,9 +85,6 @@ get_calibrated_threshold <- function(calibration_table, n, rho, epsilon) {
   calibration_table$aic_threshold[which.min(d)]
 }
 
-# Public-facing name for the calibration function. calibrate_medusa_null()
-# remains as the internal name the rest of the code and tests already use;
-# calibrate_rze() is the name users see and call.
 #' Calibrate the AIC threshold against simulated null trees
 #'
 #' Simulates constant-rate (no-shift) trees across a grid of tree size,
@@ -115,4 +108,13 @@ get_calibrated_threshold <- function(calibration_table, n, rho, epsilon) {
 #'   \code{epsilon}, the number of valid replicates, and
 #'   \code{aic_threshold}.
 #' @export
-calibrate_rze <- function(...) calibrate_medusa_null(...)
+calibrate_hazel <- function(n_grid, rho_grid, epsilon_grid,
+                          n_replicates, min_clade_size = 5,
+                          target_percentile = 0.95, verbose = TRUE) {
+  calibrate_medusa_null(n_grid = n_grid, rho_grid = rho_grid,
+                        epsilon_grid = epsilon_grid,
+                        n_replicates = n_replicates,
+                        min_clade_size = min_clade_size,
+                        target_percentile = target_percentile,
+                        verbose = verbose)
+}

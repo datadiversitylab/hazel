@@ -29,7 +29,10 @@
 score_multi_shift_detection <- function(result, tree, true_shifts,
                                          overlap_threshold = 0.7) {
 
-  detected_clades <- lapply(result$splits, function(nd) {
+  detected_nodes <- if (!is.null(result$splits)) result$splits else result$shifts
+  if (is.null(detected_nodes)) detected_nodes <- integer(0)
+  
+  detected_clades <- lapply(detected_nodes, function(nd) {
     tree$tip.label[phangorn::Descendants(tree, nd, type = "tips")[[1]]]
   })
 
@@ -55,7 +58,7 @@ score_multi_shift_detection <- function(result, tree, true_shifts,
   }, logical(1))
 
   n_true <- length(true_shifts)
-  n_detected <- length(result$splits)
+  n_detected <- length(detected_nodes)
   n_recovered <- sum(true_shift_found)
   n_false_positive <- sum(!detection_is_true_positive)
 

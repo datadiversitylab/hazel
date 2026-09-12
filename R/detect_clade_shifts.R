@@ -4,14 +4,14 @@
 
 #' Detect clade-localized diversification shifts
 #'
-#' The detection engine underlying \code{\link{rze}}: a stepwise
+#' The detection engine underlying \code{\link{hazel}}: a stepwise
 #' model-selection search over candidate clades, accepting a shift when its
 #' AIC improvement clears the calibrated threshold for the tree's size,
 #' sampling fraction, and extinction fraction.
 #'
 #' @param tree An ultrametric \code{phylo} object.
 #' @param calibration_table A calibration table from
-#'   \code{\link{calibrate_rze}}.
+#'   \code{\link{calibrate_hazel}}.
 #' @param rho Sampling fraction.
 #' @param epsilon Assumed extinction fraction.
 #' @param min_clade_size Smallest clade the search may propose.

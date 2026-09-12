@@ -1,8 +1,8 @@
-#' Default calibration table shipped with rze
+#' Default calibration table shipped with hazel
 #'
 #' A pre-computed AIC-threshold calibration table, used automatically by
-#' \code{\link{rze}} when you do not supply your own. Generated with
-#' \code{\link{calibrate_rze}} across a grid of tree size, sampling
+#' \code{\link{hazel}} when you do not supply your own. Generated with
+#' \code{\link{calibrate_hazel}} across a grid of tree size, sampling
 #' fraction, and extinction fraction.
 #'
 #' @format A data frame with one row per calibration cell and columns:
@@ -13,12 +13,12 @@
 #'   \item{n_valid_replicates}{Null replicates that produced a usable value.}
 #'   \item{aic_threshold}{The calibrated AIC-improvement acceptance threshold.}
 #' }
-#' @seealso \code{\link{calibrate_rze}}, \code{\link{resolve_calibration}}
+#' @seealso \code{\link{calibrate_hazel}}, \code{\link{resolve_calibration}}
 "calibration_default"
 
-#' rze: calibrated detection of clade-localized diversification shifts
+#' hazel: calibrated detection of clade-localized diversification shifts
 #'
-#' rze finds where on a time-calibrated phylogeny of extant taxa net
+#' hazel finds where on a time-calibrated phylogeny of extant taxa net
 #' diversification rate shifts, and reports the net diversification rate of
 #' each detected regime. It uses a stepwise search over candidate clades
 #' with an AIC threshold calibrated against simulated constant-rate trees.

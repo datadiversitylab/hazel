@@ -17,7 +17,7 @@ detect_clade_shifts(
 \item{tree}{An ultrametric \code{phylo} object.}
 
 \item{calibration_table}{A calibration table from
-\code{\link{calibrate_rze}}.}
+\code{\link{calibrate_hazel}}.}
 
 \item{rho}{Sampling fraction.}
 
@@ -32,7 +32,7 @@ A list with detected split nodes, the final fit, and the search
 history.
 }
 \description{
-The detection engine underlying \code{\link{rze}}: a stepwise
+The detection engine underlying \code{\link{hazel}}: a stepwise
 model-selection search over candidate clades, accepting a shift when its
 AIC improvement clears the calibrated threshold for the tree's size,
 sampling fraction, and extinction fraction.

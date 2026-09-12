@@ -1,8 +1,8 @@
 ---
-title: "Two ways to run rze: shipped table or your own"
+title: "Two ways to run hazel: shipped table or your own"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Two ways to run rze: shipped table or your own}
+  %\VignetteIndexEntry{Two ways to run hazel: shipped table or your own}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -11,14 +11,14 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
 ```
 
-There are two ways to run rze. One uses the calibration table that ships with the package, so you skip calibration and get a result immediately. The other calibrates for your specific tree first, which is slower but tuned to your exact settings. This vignette runs the same tree both ways so you can see what changes and what does not.
+There are two ways to run hazel. One uses the calibration table that ships with the package, so you skip calibration and get a result immediately. The other calibrates for your specific tree first, which is slower but tuned to your exact settings. This vignette runs the same tree both ways so you can see what changes and what does not.
 
 ## The fast way: use the shipped table
 
-You do nothing special. rze finds the shipped table and uses it.
+You do nothing special. hazel finds the shipped table and uses it.
 
 ```{r}
-library(rze)
+library(hazel)
 
 set.seed(1)
 sim <- simulate_multi_shift_tree(
@@ -31,25 +31,25 @@ sim <- simulate_multi_shift_tree(
 )
 my_tree <- sim$tree
 
-result_shipped <- rze(my_tree, rho = 0.75)
+result_shipped <- hazel(my_tree, rho = 0.75)
 result_shipped
 ```
 
-Behind the scenes, rze looked up the calibration cell closest to your tree's size, sampling fraction, and extinction assumption, and used that threshold. This is the right choice when your tree falls inside the shipped grid, which covers a wide range of tree sizes and sampling fractions.
+Behind the scenes, hazel looked up the calibration cell closest to your tree's size, sampling fraction, and extinction assumption, and used that threshold. This is the right choice when your tree falls inside the shipped grid, which covers a wide range of tree sizes and sampling fractions.
 
 ## The tuned way: calibrate first
 
 Here you build a calibration for your tree's exact settings, then pass it in.
 
 ```{r}
-calib <- calibrate_rze(
+calib <- calibrate_hazel(
   n_grid = length(my_tree$tip.label),
   rho_grid = 0.75,
   epsilon_grid = 0.2,
   n_replicates = 300
 )
 
-result_tuned <- rze(my_tree, calibration = calib, rho = 0.75)
+result_tuned <- hazel(my_tree, calibration = calib, rho = 0.75)
 result_tuned
 ```
 

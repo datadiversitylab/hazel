@@ -1,3 +1,3 @@
 library(testthat)
-library(rze)
-test_check("rze")
+library(hazel)
+test_check("hazel")
