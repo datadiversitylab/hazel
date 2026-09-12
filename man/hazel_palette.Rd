@@ -13,7 +13,7 @@ hazel_palette(n = 256)
 A character vector of hex colors.
 }
 \description{
-An earthy sequential ramp used across hazel plots, running from cool,
-deep tones (low rates) through warm tones (high rates). Suitable for
-shading branches or filling a rate legend.
+An earthy sequential ramp used across hazel plots, running from cool
+teal-green tones (low rates) through gold and orange to deep rust (high
+rates).
 }

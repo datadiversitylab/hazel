@@ -1,11 +1,6 @@
 #' Plot a hazel result as a branch-colored tree
 #'
-#' A phylogeny with branches colored by regime: the background and each
-#' detected shift-clade gets its own color, so a tree with several regimes
-#' reads as a set of distinct rate regimes rather than a background with a
-#' few highlights. Detected shifts are marked at their nodes, and a compact
-#' key gives each regime's net diversification rate. The plot has no title,
-#' so it drops cleanly into a figure. Built in base R, single panel.
+#' A phylogeny with branches colored by regime.
 #'
 #' @param x A \code{hazel_result} object.
 #' @param show_tip_labels Whether to draw tip labels.

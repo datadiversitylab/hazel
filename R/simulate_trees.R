@@ -120,3 +120,89 @@ simulate_clade_shift_tree <- function(n_background, n_shifted,
        shifted_clade_tips = shifted_clade$tip.label,
        attach_depth = root_age - receptor_stem)
 }
+#' Simulate a tree with a nested rate shift
+#'
+#' Builds a tree with one rate shift nested inside another: an outer clade
+#' with its own diversification rate that itself contains an inner clade
+#' with a further rate change. This is the harder case for shift detection,
+#' since the inner and outer regimes must be attributed correctly at once.
+#'
+#' The inner shift is grafted onto a tip of the outer shifted clade, so the
+#' nesting is real by construction. The two clades' tips are labeled so the
+#' inner tips are a strict subset of the outer clade's descendants.
+#'
+#' @param n_background Background tree size (tip count).
+#' @param n_outer Tips in the outer shifted clade before the inner graft.
+#' @param n_inner Tips in the inner (nested) shifted clade.
+#' @param lambda_background Background speciation rate.
+#' @param outer_ratio Outer clade speciation rate as a multiple of background.
+#' @param inner_ratio Inner clade speciation rate as a multiple of background.
+#' @param epsilon Extinction fraction.
+#' @param rho Sampling fraction.
+#' @return A list with the tree, the outer clade's tip set, and the inner
+#'   clade's tip set (a subset of the outer set).
+#' @export
+simulate_nested_shift_tree <- function(n_background, n_outer, n_inner,
+                                       lambda_background = 1,
+                                       outer_ratio = 3, inner_ratio = 6,
+                                       epsilon = 0.2, rho = 1) {
+
+  # Graft the outer shift onto a background tip, using the same
+  # edge-splitting graft as the single-shift simulator.
+  graft_shift <- function(receptor_tree, target_tip, n_shifted,
+                          lambda_ratio, prefix) {
+    idx <- which(receptor_tree$tip.label == target_tip)
+    edge_i <- which(receptor_tree$edge[, 2] == idx)
+    orig_edge <- receptor_tree$edge.length[edge_i]
+
+    receptor_stem <- orig_edge / 2
+    target_depth <- orig_edge / 2
+
+    receptor <- receptor_tree
+    receptor$tip.label[idx] <- "NA"
+    receptor$edge.length[edge_i] <- receptor_stem
+
+    lam <- lambda_background * lambda_ratio
+    mu <- epsilon * lam
+    clade <- TreeSim::sim.bd.taxa(
+      n = n_shifted, numbsim = 1, lambda = lam, mu = mu,
+      frac = rho, complete = FALSE, stochsampling = FALSE
+    )[[1]]
+    clade$tip.label <- paste0(prefix, clade$tip.label)
+
+    h <- max(ape::node.depth.edgelength(clade))
+    clade$edge.length <- clade$edge.length * (target_depth / h)
+    clade$root.edge <- 0
+
+    list(tree = phytools::paste.tree(receptor, clade),
+         clade_tips = clade$tip.label)
+  }
+
+  background <- simulate_null_tree(n_background, rho = rho, epsilon = epsilon)
+
+  # Outer shift onto a random background tip
+  outer_target <- sample(background$tip.label, 1)
+  outer <- graft_shift(background, outer_target, n_outer, outer_ratio, "outer_")
+  tree <- outer$tree
+  outer_tips <- outer$clade_tips
+
+  # Inner shift onto a tip WITHIN the outer clade, so it nests
+  inner_target <- sample(outer_tips, 1)
+  inner <- graft_shift(tree, inner_target, n_inner, inner_ratio, "inner_")
+  tree <- inner$tree
+  inner_tips <- inner$clade_tips
+
+  # The outer clade's descendant tips now include the inner tips plus the
+  # remaining outer tips (all but the one replaced by the inner graft).
+  outer_tips_final <- c(setdiff(outer_tips, inner_target), inner_tips)
+
+  if (!ape::is.ultrametric(tree)) {
+    warning("Nested grafted tree failed the ultrametric check, inspect before using")
+  }
+
+  list(tree = tree,
+       outer_clade_tips = outer_tips_final,
+       inner_clade_tips = inner_tips,
+       outer_ratio = outer_ratio,
+       inner_ratio = inner_ratio)
+}

@@ -9,7 +9,7 @@
   show_tip_labels = FALSE,
   mark_size = 1.8,
   edge_width = 2.6,
-  legend = TRUE,
+  key = TRUE,
   ...
 )
 }
@@ -22,7 +22,7 @@
 
 \item{edge_width}{Branch line width.}
 
-\item{legend}{Whether to draw the rate legend.}
+\item{key}{Whether to draw the per-regime rate key.}
 
 \item{...}{Unused.}
 }
@@ -30,8 +30,5 @@
 Called for its plot side effect; returns \code{x} invisibly.
 }
 \description{
-A phylogeny with every branch colored by the net diversification rate of
-the regime it belongs to, and detected shifts marked at their nodes. A
-slim rate legend sits in the lower left. The plot has no title, so it
-drops cleanly into a figure. Built in base R, single panel.
+A phylogeny with branches colored by regime.
 }

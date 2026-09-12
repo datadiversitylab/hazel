@@ -7,9 +7,7 @@
 #'
 #' An earthy sequential ramp used across hazel plots, running from cool
 #' teal-green tones (low rates) through gold and orange to deep rust (high
-#' rates). Both ends are richly saturated, so the fastest and slowest
-#' clades read as clearly as everything in between. Suitable for shading
-#' branches or filling a rate legend.
+#' rates).
 #'
 #' @param n Number of colors to return.
 #' @return A character vector of hex colors.

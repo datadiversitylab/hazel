@@ -89,3 +89,22 @@ testthat::test_that("simulate_multi_shift_tree's shifted clades do not overlap w
                         sim$shifts[[2]]$shifted_clade_tips)
   testthat::expect_length(overlap, 0)
 })
+
+test_that("simulate_nested_shift_tree produces genuinely nested clades", {
+  set.seed(1)
+  sim <- simulate_nested_shift_tree(n_background = 40, n_outer = 20,
+                                    n_inner = 10, outer_ratio = 4,
+                                    inner_ratio = 10, epsilon = 0.2)
+
+  # ultrametric
+  expect_true(ape::is.ultrametric(sim$tree))
+  # inner clade tips are a strict subset of the outer clade tips (nesting)
+  expect_true(all(sim$inner_clade_tips %in% sim$outer_clade_tips))
+  expect_true(length(sim$inner_clade_tips) < length(sim$outer_clade_tips))
+  # no duplicate tip labels
+  expect_false(any(duplicated(sim$tree$tip.label)))
+  # the inner clade is monophyletic within the tree
+  mrca <- ape::getMRCA(sim$tree, sim$inner_clade_tips)
+  desc <- sim$tree$tip.label[phangorn::Descendants(sim$tree, mrca, type = "tips")[[1]]]
+  expect_setequal(desc, sim$inner_clade_tips)
+})
