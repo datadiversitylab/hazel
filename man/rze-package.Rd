@@ -13,5 +13,10 @@ with an AIC threshold calibrated against simulated constant-rate trees.
 \author{
 \strong{Maintainer}: Cristian Roman \email{cromanpa@arizona.edu}
 
+Authors:
+\itemize{
+  \item Cristian Roman \email{cromanpa@arizona.edu}
+}
+
 }
 \keyword{internal}
