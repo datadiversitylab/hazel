@@ -75,14 +75,28 @@ calibrate_medusa_null <- function(n_grid, rho_grid, epsilon_grid,
 #' @return The calibrated AIC-improvement threshold for the nearest cell.
 #' @export
 get_calibrated_threshold <- function(calibration_table, n, rho, epsilon) {
-  
-  d <- sqrt(
-    ((calibration_table$n - n) / max(calibration_table$n))^2 +
-      ((calibration_table$rho - rho) / max(calibration_table$rho, 1))^2 +
+
+  d_cond <- sqrt(
+    ((calibration_table$rho - rho) / max(calibration_table$rho, 1))^2 +
       ((calibration_table$epsilon - epsilon) / max(calibration_table$epsilon, 1))^2
   )
+  matched_rho    <- calibration_table$rho[which.min(d_cond)]
+  matched_eps    <- calibration_table$epsilon[which.min(d_cond)]
+  sub <- calibration_table[
+    calibration_table$rho == matched_rho &
+      calibration_table$epsilon == matched_eps, ]
+  sub <- sub[order(sub$n), ]
   
-  calibration_table$aic_threshold[which.min(d)]
+  # if n is outside the grid, use the nearest boundary value
+  if (n <= sub$n[1]) return(sub$aic_threshold[1])
+  if (n >= sub$n[nrow(sub)]) return(sub$aic_threshold[nrow(sub)])
+  
+  # linear interpolation between the two bracketing n values
+  i_lo <- max(which(sub$n <= n))
+  i_hi <- min(which(sub$n >= n))
+  if (i_lo == i_hi) return(sub$aic_threshold[i_lo])
+  w <- (n - sub$n[i_lo]) / (sub$n[i_hi] - sub$n[i_lo])
+  sub$aic_threshold[i_lo] + w * (sub$aic_threshold[i_hi] - sub$aic_threshold[i_lo])
 }
 
 #' Calibrate the AIC threshold against simulated null trees
